@@ -22,6 +22,8 @@ python -m src.mdgithub_normalizer.cli demo/input.md --mode copy --repo-root .
 
 `demo/input.md` 中有我们这个仓库针对的所有问题的例子，可以作为非常直观的效果参考~
 
+如果想直接查看 GitHub 当前对较复杂 LaTeX / MathJax 语法的实际渲染情况，可查看 [`example/latex-compatibility.md`](example/latex-compatibility.md)。
+
 ## 使用
 
 在需要启用的 Git 仓库中运行，推荐直接用 Python：
@@ -182,3 +184,5 @@ $$
 ## 更新日志
 
 - **2026-08-22**：新增 `\makebox` 兼容处理。GitHub 当前无法渲染 `\makebox`，因此将其降级为 `\mbox`，保留内部内容并移除宽度、对齐等参数；中英文 demo 同步加入示例。
+- **2026-08-22**：新增中英文 GitHub LaTeX / MathJax 兼容性示例，集中展示基础语法、AMS 语法、宏定义和已知对照项的实际渲染情况。
+- **2026-08-22**：兼容性示例新增附加对照，分别比较 `array` / `\hline`、间距命令和 `\operatorname` 在不同 GitHub 数学公式写法下的渲染结果。
