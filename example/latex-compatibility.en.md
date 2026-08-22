@@ -478,3 +478,56 @@ A \qquad \mbox{hello} \qquad B
 ## Extra extensions not judged here
 
 Extra extensions such as `physics`, `mathtools`, `cancel`, `mhchem`, `bbox`, `braket`, `amscd`, `bussproofs`, `html`, `gensymb`, and `textcomp` are outside this page's baseline GitHub compatibility check.
+
+---
+
+# E. Additional controls
+
+## E01 — `array` without `\hline`
+
+```math
+\begin{array}{c|cc}
+ & x & y\\
+A & 1 & 2\\
+B & 3 & 4
+\end{array}
+```
+
+## E02 — `array` + `\hline`
+
+```math
+\begin{array}{c|cc}
+ & x & y\\
+\hline
+A & 1 & 2\\
+B & 3 & 4
+\end{array}
+```
+
+## E03 — Spacing commands: fenced `math`
+
+```math
+a\,b\;c
+```
+
+## E04 — Spacing commands: ordinary inline math
+
+$a\,b\;c$
+
+## E05 — Spacing commands: GitHub protected inline math
+
+$`a\,b\;c`$
+
+## E06 — `\operatorname`: fenced `math`
+
+```math
+\operatorname{rank}(A)
+```
+
+## E07 — `\operatorname`: ordinary inline math
+
+$\operatorname{rank}(A)$
+
+## E08 — `\operatorname`: GitHub protected inline math
+
+$`\operatorname{rank}(A)`$
