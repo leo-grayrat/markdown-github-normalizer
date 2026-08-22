@@ -478,3 +478,56 @@ A \qquad \mbox{hello} \qquad B
 ## 本轮不判定的额外扩展
 
 `physics`、`mathtools`、`cancel`、`mhchem`、`bbox`、`braket`、`amscd`、`bussproofs`、`html`、`gensymb`、`textcomp` 等额外扩展不纳入本页的 GitHub 基础兼容性判定。
+
+---
+
+# E. 附加对照
+
+## E01 — `array`，不使用 `\hline`
+
+```math
+\begin{array}{c|cc}
+ & x & y\\
+A & 1 & 2\\
+B & 3 & 4
+\end{array}
+```
+
+## E02 — `array` + `\hline`
+
+```math
+\begin{array}{c|cc}
+ & x & y\\
+\hline
+A & 1 & 2\\
+B & 3 & 4
+\end{array}
+```
+
+## E03 — 间距命令：fenced `math`
+
+```math
+a\,b\;c
+```
+
+## E04 — 间距命令：普通行内公式
+
+$a\,b\;c$
+
+## E05 — 间距命令：GitHub protected inline math
+
+$`a\,b\;c`$
+
+## E06 — `\operatorname`：fenced `math`
+
+```math
+\operatorname{rank}(A)
+```
+
+## E07 — `\operatorname`：普通行内公式
+
+$\operatorname{rank}(A)$
+
+## E08 — `\operatorname`：GitHub protected inline math
+
+$`\operatorname{rank}(A)`$
