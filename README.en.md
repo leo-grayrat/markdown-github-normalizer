@@ -187,3 +187,4 @@ Other formatting problems are also handled with deliberately simple rules:
 
 - **2026-08-22**: Added `\makebox` compatibility handling. Since GitHub currently cannot render `\makebox`, it is downgraded to `\mbox`, preserving the contents while dropping width/alignment parameters; both demo inputs were updated as well.
 - **2026-08-22**: Added bilingual GitHub LaTeX / MathJax compatibility examples covering base syntax, AMS syntax, macro definitions, and known controls as actually rendered by GitHub.
+- **2026-08-22**: Added extra compatibility controls comparing `array` / `\hline`, spacing commands, and `\operatorname` across GitHub's different math forms.
