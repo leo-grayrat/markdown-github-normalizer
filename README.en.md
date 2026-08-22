@@ -24,6 +24,8 @@ It will generate `demo/input.en-github.md` locally. Just compare the two files.
 
 `demo/input.en.md` contains examples of every problem this repository currently targets, so it gives a very direct reference for the effect~
 
+To directly inspect how GitHub currently renders more complex LaTeX / MathJax syntax, see [`example/latex-compatibility.en.md`](example/latex-compatibility.en.md).
+
 ## Usage
 
 Run this in the Git repository where you want to enable it. Python is recommended:
@@ -184,3 +186,4 @@ Other formatting problems are also handled with deliberately simple rules:
 ## Changelog
 
 - **2026-08-22**: Added `\makebox` compatibility handling. Since GitHub currently cannot render `\makebox`, it is downgraded to `\mbox`, preserving the contents while dropping width/alignment parameters; both demo inputs were updated as well.
+- **2026-08-22**: Added bilingual GitHub LaTeX / MathJax compatibility examples covering base syntax, AMS syntax, macro definitions, and known controls as actually rendered by GitHub.
