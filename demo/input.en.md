@@ -47,7 +47,9 @@ A = 1
 + B
 $$
 
-## 7. LaTeX spacing commands `\,` and `\;`
+## 7. Standard LaTeX spacing commands `\,` and `\;` inside ordinary inline math
+
+The commands themselves render correctly. The problem is the Markdown parsing path for ordinary `$...$`; the normalizer should protect the formula without rewriting the commands themselves.
 
 $a\,b\;c$
 
