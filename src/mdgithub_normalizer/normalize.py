@@ -14,8 +14,6 @@ _BOLD = re.compile(r"(?<![\\*])\*\*(?!\*)(.+?)(?<![\\*])\*\*(?!\*)")
 _OPERATORNAME = re.compile(r"\\operatorname\{([^{}\\]+)\}")
 _CROSS = re.compile(r"\\cross(?![A-Za-z])")
 _ESCAPED_SUBSCRIPT = re.compile(r"\\_\{")
-_THIN_SPACE = re.compile(r"\\,[ \t]*")
-_THICK_SPACE = re.compile(r"\\;[ \t]*")
 _LIST = re.compile(r"^\s*(?:[-+*]|\d+[.)])\s+")
 _HEADING = re.compile(r"^\s{0,3}#{1,6}(?:\s+|$)")
 _HRULE = re.compile(r"^\s{0,3}(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})$")
@@ -153,8 +151,6 @@ def _convert_display_math(lines: list[str]) -> list[str]:
 
 def _repair_math(text: str) -> str:
     text = _replace_makebox(text)
-    text = _THIN_SPACE.sub(r"\\mkern3mu ", text)
-    text = _THICK_SPACE.sub(r"\\mkern5mu ", text)
     text = _CROSS.sub(r"\\times", text)
     text = _ESCAPED_SUBSCRIPT.sub("_{", text)
     return _OPERATORNAME.sub(lambda match: rf"\mathrm{{{match.group(1)}}}", text)

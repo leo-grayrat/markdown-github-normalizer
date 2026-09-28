@@ -29,14 +29,18 @@ class NormalizeMarkdownTests(unittest.TestCase):
         expected = "前文\n\n$$\nx=1\n"
         self.assertEqual(normalize_markdown(source), expected)
 
-    def test_protects_inline_math_and_rewrites_spacing_commands(self):
+    def test_protects_inline_math_and_preserves_spacing_commands(self):
         source = "中文$x\\;y\\,z$中文，另有\\(q+1\\)正文。\n"
-        expected = "中文 $`x\\mkern5mu y\\mkern3mu z`$ 中文，另有 $`q+1`$ 正文。\n"
+        expected = "中文 $`x\\;y\\,z`$ 中文，另有 $`q+1`$ 正文。\n"
         self.assertEqual(normalize_markdown(source), expected)
 
-    def test_repairs_all_known_tex_compatibility_forms_inside_math(self):
+    def test_preserves_spacing_commands_inside_existing_protected_math(self):
+        source = "前文 $`a\\,b\\;c`$ 后文\n"
+        self.assertEqual(normalize_markdown(source), source)
+
+    def test_repairs_known_tex_compatibility_forms_without_rewriting_spacing(self):
         source = "$$\n\\operatorname{vec}(D\\_{m}) \\cross x \\; y \\, z\n$$\n"
-        expected = "```math\n\\mathrm{vec}(D_{m}) \\times x \\mkern5mu y \\mkern3mu z\n```\n"
+        expected = "```math\n\\mathrm{vec}(D_{m}) \\times x \\; y \\, z\n```\n"
         self.assertEqual(normalize_markdown(source), expected)
 
     def test_replaces_makebox_with_mbox_and_drops_layout_arguments(self):
@@ -64,7 +68,7 @@ class NormalizeMarkdownTests(unittest.TestCase):
 
     def test_existing_math_fence_uses_same_repairs(self):
         source = "```math\n\\operatorname{rank}(A) \\cross B \\; C\n```\n"
-        expected = "```math\n\\mathrm{rank}(A) \\times B \\mkern5mu C\n```\n"
+        expected = "```math\n\\mathrm{rank}(A) \\times B \\; C\n```\n"
         self.assertEqual(normalize_markdown(source), expected)
 
     def test_repairs_bold_internal_space_and_word_boundaries(self):
