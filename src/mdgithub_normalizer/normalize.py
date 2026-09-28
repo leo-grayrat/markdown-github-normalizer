@@ -178,13 +178,22 @@ def _normalize_bold(segment: str) -> str:
         trimmed = body.rstrip(" \t")
         if not trimmed:
             return match.group(0)
-        return f"**{trimmed}**{body[len(trimmed):]}"
+        trailing = body[len(trimmed) :]
+        left = " " if match.start() > 0 and re.match(r"\w", segment[match.start() - 1]) else ""
+        right = (
+            " "
+            if not trailing
+            and match.end() < len(segment)
+            and re.match(r"\w", segment[match.end()])
+            else ""
+        )
+        return f"{left}**{trimmed}**{trailing}{right}"
 
     return _BOLD.sub(repair, segment)
 
 
 def _space_inline_boundaries(segment: str) -> str:
-    inline = r"(?:\$`[^`\n]+`\$|(?<![\\*])\*\*(?!\*).+?(?<![\\*])\*\*(?!\*))"
+    inline = r"\$`[^`\n]+`\$"
     segment = re.sub(rf"(?<=\w)({inline})", r" \1", segment)
     segment = re.sub(rf"({inline})(?=\w)", r"\1 ", segment)
     return segment
