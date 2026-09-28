@@ -75,8 +75,8 @@ mode = "replace"
 ## Currently Handled
 
 - Convert `\[ ... \]` and `$$ ... $$` display math into fenced `math` blocks;
-- Convert ordinary `$...$` and `\( ... \)` inline math into GitHub protected inline math;
-- Fix formula compatibility problems we have actually encountered: `\cross`, `\_{...}`, `\operatorname{...}`, `\,`, `\;`, and `\makebox`;
+- Convert ordinary `$...$` and `\( ... \)` inline math into GitHub protected inline math while preserving LaTeX commands that GitHub's math renderer already supports;
+- Fix formula compatibility problems we have actually encountered: `\cross`, `\_{...}`, `\operatorname{...}`, and `\makebox`;
 - Add necessary boundary spaces when inline math or bold text is stuck directly to surrounding prose, and fix clear bold-spacing problems such as `**123 **`;
 - Turn single line breaks in Typora prose into paragraph-separating blank lines.
 
@@ -145,7 +145,7 @@ However, things turned out to be more complicated than we expected…
 | A standalone `=` line inside `$$ ... $$` gets parsed by Markdown as a heading structure | `=` is treated as setext heading syntax and turns into an H1 |
 | After a blank line inside `$$ ... $$`, a line starting with `+` can be parsed as a Markdown list | `+` gets treated as ordinary Markdown syntax |
 | A blank line by itself inside `$$ ... $$` may also make the whole formula fail to render | Same underlying problem: the content is not being isolated as one formula block, so ordinary Markdown parsing interferes; blank lines strike again |
-| Valid LaTeX spacing commands such as `\;` and `\,` render merely as escaped `;` and `,` characters | ? (a classic GitHub moment; I do not know why this has to be forbidden) |
+| Valid LaTeX spacing commands such as `\;` and `\,` may be misparsed inside ordinary `$...$` | The same commands render correctly in fenced `math` and GitHub protected inline math. The problem is the Markdown parsing path for ordinary `$...$`, so the formula should be protected without rewriting the LaTeX commands |
 | GitHub blocks some LaTeX macros often written by AI, such as `\operatorname{vec}` | GitHub does not allow users to “freely extend macros” because macros can involve injection and similar risks, even though this is just a syntax-extension macro |
 | Some more advanced LaTeX commands simply do not render (especially ones AI likes to overuse) | AI constantly uses `makebox` for right alignment (note: this does not draw a visible box) |
 | Some symbols simply do not render (especially ones improvised by hand) | For example, using `\cross` for multiplication does not work; it has to be `\times` |
@@ -166,6 +166,7 @@ Other formatting problems are also handled with deliberately simple rules:
 - **Separate block structures with blank lines.** For example, ensure blank lines between prose and display math.
 - For clear internal-spacing errors such as `**123 **`, move the space outside the bold range.
 - For punctuation cases such as `**Conclusion:**text`, add a space after the closing `**`.
+- When GitHub's math renderer already supports a LaTeX command and only the outer Markdown parsing breaks it, fix the formula wrapper instead of rewriting the formula contents.
 - For problems such as `\operatorname`, `\cross`, and `\_{...}`, only handle formula forms that we have actually encountered and can rewrite unambiguously.
 
 > We originally wanted to keep the script from becoming too miscellaneous, and:
@@ -184,3 +185,4 @@ Other formatting problems are also handled with deliberately simple rules:
 ## Changelog
 
 - **2026-08-22**: Added `\makebox` compatibility handling. Since GitHub currently cannot render `\makebox`, it is downgraded to `\mbox`, preserving the contents while dropping width/alignment parameters; both demo inputs were updated as well.
+- **2026-08-22**: Rechecked GitHub math rendering and confirmed that `\,` and `\;` are supported. The earlier failure came from the Markdown parsing path for ordinary `$...$`, so the `\mkern...` rewrites were removed and the original LaTeX commands are now preserved through protected inline math.
