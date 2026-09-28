@@ -76,6 +76,11 @@ class NormalizeMarkdownTests(unittest.TestCase):
         expected = "前文 **结论：** 正文\n\n**123** 后文\n"
         self.assertEqual(normalize_markdown(source), expected)
 
+    def test_multiple_bold_spans_do_not_pair_across_boundaries(self):
+        source = "父子中位延迟比仅约 **1.002 倍**。两项可运行的动作及普通对照均记为**未判定**，而非无效。\n"
+        expected = "父子中位延迟比仅约 **1.002 倍**。两项可运行的动作及普通对照均记为 **未判定**，而非无效。\n"
+        self.assertEqual(normalize_markdown(source), expected)
+
     def test_does_not_add_spaces_between_bold_and_punctuation(self):
         source = "（**结论**），下一句。\n"
         self.assertEqual(normalize_markdown(source), source)

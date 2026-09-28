@@ -152,6 +152,7 @@ However, things turned out to be more complicated than we expected…
 | AI unnecessarily escapes LaTeX subscripts | For example, `D\_{m\times n}` |
 | A space mixed inside the closing bold delimiter can break bold formatting | `**123 **`: the bold delimiter has to bind toward adjacent valid characters; otherwise who knows whether it should match forward or backward? |
 | Bold text ending in punctuation and immediately followed by prose may fail to close properly | `**Conclusion:**text` — and yes, special characters can cause trouble too; AI can easily produce this kind of thing |
+| With multiple bold spans on one line, boundary spacing used to be able to re-pair `**` from different spans | For example, `**1.002x** ... **undetermined**` could become `**1.002x ** ... ** undetermined**`; boundaries are now handled directly on each complete bold span when it is first matched |
 | A normal single newline in Typora prose gets merged into the same paragraph on GitHub | It is treated like a continuation; rich-text Typora obviously has no need for that source-code wrapping behavior |
 | Prose stuck directly to an inline-math `$` delimiter may stop the formula from rendering | Similar to the bold problem |
 | A `$$` block formula without blank-line separation from surrounding prose may fail to render | Same idea |
@@ -186,3 +187,4 @@ Other formatting problems are also handled with deliberately simple rules:
 
 - **2026-08-22**: Added `\makebox` compatibility handling. Since GitHub currently cannot render `\makebox`, it is downgraded to `\mbox`, preserving the contents while dropping width/alignment parameters; both demo inputs were updated as well.
 - **2026-08-22**: Rechecked GitHub math rendering and confirmed that `\,` and `\;` are supported. The earlier failure came from the Markdown parsing path for ordinary `$...$`, so the `\mkern...` rewrites were removed and the original LaTeX commands are now preserved through protected inline math.
+- **2026-09-28**: Fixed boundary spacing with multiple bold spans on one line, which could previously re-pair delimiters across separate spans. Internal bold-space repair and boundary spacing are now handled in the same real bold match, with a regression case taken from `ai4cuda-try-and-error`.
