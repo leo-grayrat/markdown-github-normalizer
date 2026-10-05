@@ -71,15 +71,32 @@ class NormalizeMarkdownTests(unittest.TestCase):
         expected = "```math\n\\mathrm{rank}(A) \\times B \\; C\n```\n"
         self.assertEqual(normalize_markdown(source), expected)
 
-    def test_repairs_bold_internal_space_and_word_boundaries(self):
+    def test_repairs_bold_internal_space_and_punctuation_boundaries(self):
         source = "前文**结论：**正文\n**123 **后文\n"
-        expected = "前文 **结论：** 正文\n\n**123** 后文\n"
+        expected = "前文**结论：** 正文\n\n**123** 后文\n"
+        self.assertEqual(normalize_markdown(source), expected)
+
+    def test_plain_bold_stays_attached_to_surrounding_text(self):
+        source = "中文**控制命令**中文\n"
+        self.assertEqual(normalize_markdown(source), source)
+
+    def test_punctuation_outside_bold_does_not_trigger_spacing(self):
+        source = "发下去的**控制命令**，和反馈回来的**机器人状态**。\n"
+        self.assertEqual(normalize_markdown(source), source)
+
+    def test_opening_punctuation_inside_bold_adds_space_before_opener(self):
+        source = "中文**，控制命令**中文\n中文**（控制命令**中文\n中文**“控制命令**中文\n"
+        expected = "中文 **，控制命令**中文\n\n中文 **（控制命令**中文\n\n中文 **“控制命令**中文\n"
+        self.assertEqual(normalize_markdown(source), expected)
+
+    def test_closing_punctuation_inside_bold_adds_space_after_closer(self):
+        source = "中文**控制命令，**中文\n中文**控制命令）**中文\n一个**工作空间（workspace）**里管理\n"
+        expected = "中文**控制命令，** 中文\n\n中文**控制命令）** 中文\n\n一个**工作空间（workspace）** 里管理\n"
         self.assertEqual(normalize_markdown(source), expected)
 
     def test_multiple_bold_spans_do_not_pair_across_boundaries(self):
         source = "父子中位延迟比仅约 **1.002 倍**。两项可运行的动作及普通对照均记为**未判定**，而非无效。\n"
-        expected = "父子中位延迟比仅约 **1.002 倍**。两项可运行的动作及普通对照均记为 **未判定**，而非无效。\n"
-        self.assertEqual(normalize_markdown(source), expected)
+        self.assertEqual(normalize_markdown(source), source)
 
     def test_does_not_add_spaces_between_bold_and_punctuation(self):
         source = "（**结论**），下一句。\n"

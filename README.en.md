@@ -77,7 +77,7 @@ mode = "replace"
 - Convert `\[ ... \]` and `$$ ... $$` display math into fenced `math` blocks;
 - Convert ordinary `$...$` and `\( ... \)` inline math into GitHub protected inline math while preserving LaTeX commands that GitHub's math renderer already supports;
 - Fix formula compatibility problems we have actually encountered: `\cross`, `\_{...}`, `\operatorname{...}`, and `\makebox`;
-- Add necessary boundary spaces when inline math or bold text is stuck directly to surrounding prose, and fix clear bold-spacing problems such as `**123 **`;
+- Add necessary boundary spaces when inline math is stuck directly to prose; for bold text, only add a space outside the relevant `**` boundary when punctuation is inside the bold span, touches that boundary, and prose is directly attached on the outside. Clear internal-spacing mistakes such as `**123 **` are also repaired;
 - Turn single line breaks in Typora prose into paragraph-separating blank lines.
 
 ## Prompt for LLMs
@@ -151,7 +151,7 @@ However, things turned out to be more complicated than we expected…
 | Some symbols simply do not render (especially ones improvised by hand) | For example, using `\cross` for multiplication does not work; it has to be `\times` |
 | AI unnecessarily escapes LaTeX subscripts | For example, `D\_{m\times n}` |
 | A space mixed inside the closing bold delimiter can break bold formatting | `**123 **`: the bold delimiter has to bind toward adjacent valid characters; otherwise who knows whether it should match forward or backward? |
-| Bold text ending in punctuation and immediately followed by prose may fail to close properly | `**Conclusion:**text` — and yes, special characters can cause trouble too; AI can easily produce this kind of thing |
+| Punctuation inside a bold span can break the delimiter when it touches the boundary and prose is attached immediately outside | `text**(control command**text` needs a space before the opening `**`; `**Conclusion:**text` and `**workspace (workspace)**more` need a space after the closing `**`. Punctuation outside the bold span, such as `**control command**,`, is left alone |
 | With multiple bold spans on one line, boundary spacing used to be able to re-pair `**` from different spans | For example, `**1.002x** ... **undetermined**` could become `**1.002x ** ... ** undetermined**`; boundaries are now handled directly on each complete bold span when it is first matched |
 | A normal single newline in Typora prose gets merged into the same paragraph on GitHub | It is treated like a continuation; rich-text Typora obviously has no need for that source-code wrapping behavior |
 | Prose stuck directly to an inline-math `$` delimiter may stop the formula from rendering | Similar to the bold problem |
@@ -163,10 +163,10 @@ We can now confirm that GitHub's `$$ ... $$` does not reliably isolate its conte
 
 Other formatting problems are also handled with deliberately simple rules:
 
-- **Separate inline structures with spaces.** For example, when inline math or bold text is directly attached to surrounding prose, add spaces at the structure boundaries.
+- Separate inline math from directly attached prose with spaces.
+- Do not rewrite ordinary cases such as `text**bold**text` or `**bold**,text` when GitHub already renders them correctly. Only when punctuation is inside the bold span, touches the opening or closing edge, and prose is attached immediately outside that edge do we add a space outside the corresponding `**`.
 - **Separate block structures with blank lines.** For example, ensure blank lines between prose and display math.
 - For clear internal-spacing errors such as `**123 **`, move the space outside the bold range.
-- For punctuation cases such as `**Conclusion:**text`, add a space after the closing `**`.
 - When GitHub's math renderer already supports a LaTeX command and only the outer Markdown parsing breaks it, fix the formula wrapper instead of rewriting the formula contents.
 - For problems such as `\operatorname`, `\cross`, and `\_{...}`, only handle formula forms that we have actually encountered and can rewrite unambiguously.
 
@@ -188,3 +188,4 @@ Other formatting problems are also handled with deliberately simple rules:
 - **2026-08-22**: Added `\makebox` compatibility handling. Since GitHub currently cannot render `\makebox`, it is downgraded to `\mbox`, preserving the contents while dropping width/alignment parameters; both demo inputs were updated as well.
 - **2026-08-22**: Rechecked GitHub math rendering and confirmed that `\,` and `\;` are supported. The earlier failure came from the Markdown parsing path for ordinary `$...$`, so the `\mkern...` rewrites were removed and the original LaTeX commands are now preserved through protected inline math.
 - **2026-09-28**: Fixed boundary spacing with multiple bold spans on one line, which could previously re-pair delimiters across separate spans. Internal bold-space repair and boundary spacing are now handled in the same real bold match, with a regression case taken from `ai4cuda-try-and-error`.
+- **2026-10-05**: Narrowed the bold-boundary rule after direct GitHub rendering tests. Ordinary bold text and punctuation outside bold are preserved; spacing is added only when punctuation is inside the bold span, touches the boundary, and prose is directly attached outside that boundary.
