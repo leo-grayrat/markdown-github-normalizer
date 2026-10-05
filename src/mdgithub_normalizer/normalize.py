@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 
 _FENCE = re.compile(r"^(?P<prefix>\s*(?:>\s*)*)(?P<mark>```+|~~~+)(?P<info>.*)$")
 _DISPLAY = re.compile(r"^(?P<prefix>\s*(?:>\s*)*)(?P<delim>\$\$|\\\[|\\\])\s*$")
@@ -172,6 +173,10 @@ def _protect_math(segment: str) -> str:
     return segment
 
 
+def _is_punctuation(char: str) -> bool:
+    return bool(char) and unicodedata.category(char).startswith("P")
+
+
 def _normalize_bold(segment: str) -> str:
     def repair(match: re.Match[str]) -> str:
         body = match.group(1)
@@ -179,12 +184,15 @@ def _normalize_bold(segment: str) -> str:
         if not trimmed:
             return match.group(0)
         trailing = body[len(trimmed) :]
-        left = " " if match.start() > 0 and re.match(r"\w", segment[match.start() - 1]) else ""
+        previous = segment[match.start() - 1] if match.start() > 0 else ""
+        following = segment[match.end()] if match.end() < len(segment) else ""
+        left = " " if previous and re.match(r"\w", previous) and _is_punctuation(trimmed[0]) else ""
         right = (
             " "
             if not trailing
-            and match.end() < len(segment)
-            and re.match(r"\w", segment[match.end()])
+            and following
+            and re.match(r"\w", following)
+            and _is_punctuation(trimmed[-1])
             else ""
         )
         return f"{left}**{trimmed}**{trailing}{right}"
