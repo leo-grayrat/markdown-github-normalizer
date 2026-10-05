@@ -73,15 +73,21 @@ $A \qquad \makebox[0pt][r]{row 1} \qquad B$
 
 This is **broken bold **followed by more prose
 
-## 13. Prose stuck directly after closing bold
+## 13. Bold content ends in punctuation and is immediately followed by prose
 
-**Conclusion:**text follows immediately
+one**workspace (workspace)**more
 
-## 14. Multiple bold spans on the same line
+## 14. Bold content starts with punctuation and is immediately preceded by prose
+
+text**(control command**text
+
+## 15. Valid bold boundaries should stay unchanged
+
+send the**control command**, then read the**robot state**.
 
 The parent/child median latency ratio is only about **1.002x**. The runnable actions and the control are recorded as**undetermined**, not invalid.
 
-## 15. These contents should not be modified accidentally
+## 16. These contents should not be modified accidentally
 
 Inline code: `$x$ **123 ** \(x\) \cross \operatorname{vec} \makebox[0pt][r]{row 1}`
 
